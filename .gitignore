@@ -2,3 +2,5 @@
 CMakeListsPrivate.txt
 .idea
 cmake-build-*
+lib/fontx
+lib/GNSS
