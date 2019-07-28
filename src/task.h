@@ -5,32 +5,44 @@
 #ifndef GNSS_LOGGER_TASK_H
 #define GNSS_LOGGER_TASK_H
 
+#include <vector>
+#include <map>
+#include "gnss_logger.h"
+
 namespace task {
-    enum DisplayType {Datetime, Location, Mode, Speed, Cardinal, Altitude};
+    enum MessageType {BOTH, GNSS, ENV, GUIDE, MARK};
 
     typedef struct {
-        DisplayType displayType;
-        union {
-            time_t datetime;
-            uint8_t mode;
-            struct {
-                double lat;
-                double lng;
-            } location;
-            double speed;
-            const char *cardinal;
-            double altitude;
-        } data;
-    } displayMessage_t;
+        time_t datetime;
+        uint8_t mode;
+        double lat;
+        double lng;
+        double speed;
+        const char *cardinal;
+        double altitude;
+        uint32_t satellites;
+        double hdop;
+        std::map<std::string, std::vector<uint8_t>> usedSat;
+        //std::vector<uint16_t> usedSat;
+    } gnssMessage_t;
 
     typedef struct {
+        float temperature;
+        float humidity;
+        float pressure;
+    } envMessage_t;
 
-    } saveMessage_t;
+    typedef struct {
+        MessageType displayType;
+        gnssMessage_t gnss;
+        envMessage_t env;
+        logger::Status status;
+    } message_t;
 
     void setup();
 
-    void sendDisplayMessage(displayMessage_t&);
-    void sendSaveMessage(saveMessage_t&);
+    void sendDisplayMessage(message_t&);
+    void sendSaveMessage(message_t&);
 
     void displayTask(void *);
     void saveTask(void *);
